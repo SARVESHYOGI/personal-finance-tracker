@@ -19,8 +19,9 @@ import { useAuthStatus } from "@/hooks/useAuthStatus";
 
 const navigation = [
   { name: "Home", href: "/" },
-  { name: "Dashboard", href: "/dashboard" },
+  { name: "Dashboard", href: "/dashboard" }, // Dashboard link (conditionally rendered)
   { name: "About", href: "/about" },
+  { name: "AddFields", href: "/addfields" },
 ];
 
 export function Navbar() {
@@ -66,19 +67,25 @@ export function Navbar() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex md:items-center md:space-x-6">
-            {navigation.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={`text-base font-medium ${
-                  pathname === item.href
-                    ? "text-emerald-600"
-                    : "text-gray-500 hover:text-gray-900"
-                }`}
-              >
-                {item.name}
-              </Link>
-            ))}
+            {navigation
+              .filter(
+                (item) =>
+                  (item.name !== "Dashboard" && item.name !== "AddFields") ||
+                  isLoggedIn
+              )
+              .map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={`text-base font-medium ${
+                    pathname === item.href
+                      ? "text-emerald-600"
+                      : "text-gray-500 hover:text-gray-900"
+                  }`}
+                >
+                  {item.name}
+                </Link>
+              ))}
           </div>
 
           {/* User Actions */}
@@ -96,7 +103,7 @@ export function Navbar() {
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem>
                     <User className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
+                    <Link href="/profile">Profile</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
                     <Martini className="mr-2 h-4 w-4" />
@@ -162,16 +169,18 @@ export function Navbar() {
             <div className="mt-6 flow-root">
               <div className="-my-6 divide-y divide-gray-500/10">
                 <div className="space-y-2 py-6">
-                  {navigation.map((item) => (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
+                  {navigation
+                    .filter((item) => item.name !== "Dashboard" || isLoggedIn)
+                    .map((item) => (
+                      <Link
+                        key={item.name}
+                        href={item.href}
+                        className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        {item.name}
+                      </Link>
+                    ))}
                 </div>
                 {!isLoggedIn && (
                   <div className="py-6">
