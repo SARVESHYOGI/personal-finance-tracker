@@ -1,4 +1,3 @@
-import AddFields from "./components/AddFields";
 import ExpenseBreakdown from "./components/Expensebreakdown";
 import FinancialOverview from "./components/Financial";
 import RecentTransactions from "./components/Recenttransactions";
