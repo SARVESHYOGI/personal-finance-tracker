@@ -23,14 +23,14 @@ import {
 } from "@/components/ui/form";
 import { useState } from "react";
 
-const datare = [
-  { name: "Housing", value: 1200 },
-  { name: "Food", value: 500 },
-  { name: "Transportation", value: 300 },
-  { name: "Utilities", valuae: 200 },
-  { name: "Entertainment", value: 150 },
-  { name: "Others", value: 450 },
-];
+// const datare = [
+//   { name: "Housing", value: 1200 },
+//   { name: "Food", value: 500 },
+//   { name: "Transportation", value: 300 },
+//   { name: "Utilities", valuae: 200 },
+//   { name: "Entertainment", value: 150 },
+//   { name: "Others", value: 450 },
+// ];
 
 const fetcher = async (path: string) => {
   const docRef = doc(db, path);
@@ -49,9 +49,11 @@ const COLORS = [
   "#8884D8",
   "#82ca9d",
 ];
-
+type ExpenseItem = {
+  name: string;
+  value: number;
+};
 export default function ExpenseBreakdown() {
-  const [year, setYear] = useState("2024");
   const [selectedOption, setSelectedOption] = useState("2024");
 
   // Handle option change
@@ -65,6 +67,7 @@ export default function ExpenseBreakdown() {
   );
   const years = [2025, 2024];
   console.log(data?.items);
+  const datare = data?.items;
   return (
     <Card>
       <CardHeader>
@@ -88,7 +91,7 @@ export default function ExpenseBreakdown() {
         <ResponsiveContainer width="100%" height={300}>
           <PieChart>
             <Pie
-              data={datare}
+              data={data?.items}
               cx="50%"
               cy="50%"
               labelLine={false}
@@ -96,7 +99,7 @@ export default function ExpenseBreakdown() {
               fill="#8884d8"
               dataKey="value"
             >
-              {datare.map((entry, index) => (
+              {data?.items.map((_: ExpenseItem, index: number) => (
                 <Cell
                   key={`cell-${index}`}
                   fill={COLORS[index % COLORS.length]}
