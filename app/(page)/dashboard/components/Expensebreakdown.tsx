@@ -6,31 +6,8 @@ import useSWR from "swr";
 import { useAuth } from "@/context/AuthContext";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { useState } from "react";
 
-// const datare = [
-//   { name: "Housing", value: 1200 },
-//   { name: "Food", value: 500 },
-//   { name: "Transportation", value: 300 },
-//   { name: "Utilities", valuae: 200 },
-//   { name: "Entertainment", value: 150 },
-//   { name: "Others", value: 450 },
-// ];
+import { useState } from "react";
 
 const fetcher = async (path: string) => {
   const docRef = doc(db, path);
@@ -63,6 +40,7 @@ type ExpenseItem = {
   value: number;
 };
 export default function ExpenseBreakdown() {
+  const { year, setYear } = useAuth();
   const [selectedOption, setSelectedOption] = useState("2024");
 
   // Handle option change
@@ -71,14 +49,14 @@ export default function ExpenseBreakdown() {
   };
   const { user } = useAuth();
   const { data, error, isLoading } = useSWR(
-    `users/${user?.uid}/expensesData/${selectedOption}`,
+    `users/${user?.uid}/${year}/expensesData`,
     fetcher
   );
   const {
     data: data1,
     error: error1,
     isLoading: isLoading1,
-  } = useSWR(`users/${user?.uid}/expensesData/`, fetcher1);
+  } = useSWR(`users/${user?.uid}/${year}/expensesData`, fetcher1);
   console.log(data1);
   const years = [2022, 2025, 2024];
   console.log(data?.items);

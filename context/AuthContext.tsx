@@ -9,6 +9,8 @@ interface AuthContextType {
   user: User | null; // Current logged-in user
   isLoading: boolean; // State to track if the auth is loading
   logout: () => Promise<void>; // Function to handle logout
+  year: string;
+  setYear: (year: string) => void;
 }
 
 // Create the AuthContext
@@ -18,6 +20,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null); // State to store the user object
   const [isLoading, setIsLoading] = useState(true); // Loading state
+  const [year, setYear] = useState(""); // State to store the selected year
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -40,7 +43,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, logout }}>
+    <AuthContext.Provider value={{ user, isLoading, logout, year, setYear }}>
       {children}
     </AuthContext.Provider>
   );

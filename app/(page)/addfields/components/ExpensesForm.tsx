@@ -50,7 +50,7 @@ const initialData: Expenses = {
 };
 
 export default function ExpensesForm() {
-  const { user } = useAuth();
+  const { user, year, setYear } = useAuth();
   const [expenses, setExpenses] = useState<Expenses>(initialData);
   const [formError, setFormError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -59,12 +59,8 @@ export default function ExpensesForm() {
   const fetchexpenses = async (user: { uid: string } | undefined) => {
     if (user) {
       try {
-        const userRef1 = doc(
-          db,
-          `users/${user.uid}/expensesData`,
-          `${expenses.year}`
-        );
-        const userRef2 = doc(db, `users/${user.uid}/financialData`, "data");
+        const userRef1 = doc(db, `users/${user.uid}/${year}/expensesData`);
+        const userRef2 = doc(db, `users/${user.uid}/${year}/financialData`);
 
         const docSnap1 = await getDoc(userRef1);
         const docSnap2 = await getDoc(userRef2);

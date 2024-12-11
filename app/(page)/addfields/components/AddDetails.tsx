@@ -6,9 +6,20 @@ import { db } from "@/lib/firebase"; // Adjust the import path if necessary
 import { useAuth } from "@/context/AuthContext"; // Custom hook to get the logged-in user
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DollarSign, TrendingUp, TrendingDown, PiggyBank } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 
 export default function AddDetails() {
   const { user } = useAuth(); // Get the logged-in user
+  const { year, setYear } = useAuth();
   const [financialData, setFinancialData] = useState({
     income: 0,
     expenses: 0,
@@ -21,7 +32,7 @@ export default function AddDetails() {
     const fetchFinancialData = async () => {
       if (user) {
         try {
-          const userRef = doc(db, `users/${user.uid}/financialData`, "data");
+          const userRef = doc(db, `users/${user.uid}/${year}`, "financialData");
           const docSnap = await getDoc(userRef);
 
           if (docSnap.exists()) {
@@ -73,89 +84,132 @@ export default function AddDetails() {
 
   // Save updated data to Firestore
   const handleSave = async () => {
-    if (user) {
-      try {
-        const userRef = doc(db, `users/${user.uid}/financialData`, "data");
-        await setDoc(userRef, financialData);
-        alert("Financial data updated successfully!");
-      } catch (error) {
-        console.error("Error saving data: ", error);
-        alert("Failed to save data.");
+    if (!user?.uid) {
+      alert("User is not authenticated. Please log in.");
+      return;
+    }
+
+    if (!year) {
+      alert("Invalid year. Please select a valid year.");
+      return;
+    }
+
+    if (!financialData || typeof financialData !== "object") {
+      alert("Invalid financial data. Please check your input.");
+      return;
+    }
+
+    try {
+      const userRef = doc(db, `users/${user.uid}/${year}`, "financialData");
+      await setDoc(userRef, financialData, { merge: true });
+      alert("Financial data updated successfully!");
+    } catch (error) {
+      console.error("Error saving data: ", error);
+      if (error instanceof Error) {
+        alert(`Failed to save data: ${error.message}`);
+      } else {
+        alert("Failed to save data: An unknown error occurred.");
       }
     }
   };
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Total Balance</CardTitle>
-          <DollarSign className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">
-            ${financialData.totalBalance.toLocaleString()}
-          </div>
-        </CardContent>
-      </Card>
+    <>
+      <div>
+        <div className="m-10">
+          <Select value={year} onValueChange={setYear}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select an Year" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Years</SelectLabel>
+                <SelectItem value="2022">2022</SelectItem>
+                <SelectItem value="2023">2023</SelectItem>
+                <SelectItem value="2024">2024</SelectItem>
+                <SelectItem value="2025">2025</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
 
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Income</CardTitle>
-          <TrendingUp className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <input
-            type="number"
-            name="income"
-            value={financialData.income}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-md"
-            placeholder="Enter income"
-          />
-        </CardContent>
-      </Card>
+        {year && (
+          <p className="mt-4 text-sm text-gray-500">
+            You selected: <span className="font-medium">{year}</span>
+          </p>
+        )}
+      </div>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Balance</CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              ${financialData.totalBalance.toLocaleString()}
+            </div>
+          </CardContent>
+        </Card>
 
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Expenses</CardTitle>
-          <TrendingDown className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <input
-            type="number"
-            name="expenses"
-            value={financialData.expenses}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-md"
-            placeholder="Enter expenses"
-          />
-        </CardContent>
-      </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Income</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <input
+              type="number"
+              name="income"
+              value={financialData.income}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-md"
+              placeholder="Enter income"
+            />
+          </CardContent>
+        </Card>
 
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Savings</CardTitle>
-          <PiggyBank className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <input
-            type="number"
-            name="savings"
-            value={financialData.savings}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-md"
-            placeholder="Enter savings"
-          />
-        </CardContent>
-      </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Expenses</CardTitle>
+            <TrendingDown className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <input
+              type="number"
+              name="expenses"
+              value={financialData.expenses}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-md"
+              placeholder="Enter expenses"
+            />
+          </CardContent>
+        </Card>
 
-      <button
-        onClick={handleSave}
-        className="mt-4 col-span-4 p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-      >
-        Save Data
-      </button>
-    </div>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Savings</CardTitle>
+            <PiggyBank className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <input
+              type="number"
+              name="savings"
+              value={financialData.savings}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-md"
+              placeholder="Enter savings"
+            />
+          </CardContent>
+        </Card>
+
+        <button
+          onClick={handleSave}
+          className="mt-4 col-span-4 p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+        >
+          Save Data
+        </button>
+      </div>
+    </>
   );
 }
