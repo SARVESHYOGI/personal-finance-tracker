@@ -41,6 +41,15 @@ const fetcher = async (path: string) => {
     throw new Error("Document not found");
   }
 };
+const fetcher1 = async (path: string) => {
+  const docRef = doc(db, path);
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    return docSnap.data();
+  } else {
+    throw new Error("Document not found");
+  }
+};
 const COLORS = [
   "#0088FE",
   "#00C49F",
@@ -65,7 +74,13 @@ export default function ExpenseBreakdown() {
     `users/${user?.uid}/expensesData/${selectedOption}`,
     fetcher
   );
-  const years = [2025, 2024];
+  const {
+    data: data1,
+    error: error1,
+    isLoading: isLoading1,
+  } = useSWR(`users/${user?.uid}/expensesData/`, fetcher1);
+  console.log(data1);
+  const years = [2022, 2025, 2024];
   console.log(data?.items);
   const datare = data?.items;
   return (
