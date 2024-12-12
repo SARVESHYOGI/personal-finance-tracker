@@ -56,55 +56,79 @@ export default function ExpensesForm() {
   const [loading, setLoading] = useState(true);
   const [totalExpenses, setTotalExpenses] = useState(0);
 
-  const fetchexpenses = async (user: { uid: string } | undefined) => {
-    if (user) {
-      try {
-        const userRef1 = doc(db, `users/${user.uid}/${year}/expensesData`);
-        const userRef2 = doc(db, `users/${user.uid}/${year}/financialData`);
+  useEffect(() => {
+    console.log("Current User:", user);
+  }, [user]);
 
-        const docSnap1 = await getDoc(userRef1);
-        const docSnap2 = await getDoc(userRef2);
+  const fetchexpenses = async (currentUser: { uid: string } | undefined) => {
+    if (!currentUser) {
+      console.log("User is not authenticated.");
+      return;
+    }
 
-        if (docSnap2.exists()) {
-          const data = docSnap2.data();
-          // console.log(data.expenses);
-          setTotalExpenses(data.expenses);
-          updateDoc(userRef1, { totalExpenses: data.expenses });
-          setExpenses({ ...expenses, totalExpenses: data.expenses });
-        } else {
-          console.warn("No financial data found, initializing with defaults.");
-          setTotalExpenses(1111110);
-        }
-        if (docSnap1.exists()) {
-          const data = docSnap1.data() as Expenses;
-          // console.log(data.totalExpenses, "total expenses");
-        } else {
-          console.warn("No expenses data found, initializing with defaults.");
-          setExpenses({
-            year: new Date().getFullYear(),
-            totalExpenses: 9999, // Default value if not found in Firestore
-            items: [
-              { name: "Housing", value: 1200 },
-              { name: "Food", value: 500 },
-              { name: "Transportation", value: 300 },
-              { name: "Utilities", value: 200 },
-              { name: "Entertainment", value: 150 },
-              { name: "Others", value: 450 },
-            ],
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching expenses data:", error);
-      } finally {
-        setLoading(false);
+    if (!year) {
+      console.log("Year is not set.");
+      setYear("2023");
+      return;
+    }
+
+    try {
+      const userRef1 = doc(db, `users/${currentUser.uid}/${year}/expensesData`);
+      const userRef2 = doc(
+        db,
+        `users/${currentUser.uid}/${year}/financialData`
+      );
+
+      const [docSnap1, docSnap2] = await Promise.all([
+        getDoc(userRef1),
+        getDoc(userRef2),
+      ]);
+
+      // Handle financial data
+      if (docSnap2.exists()) {
+        const financialData = docSnap2.data() as { expenses: number };
+        console.log("Year:", year);
+        console.log("Financial Data:", financialData);
+        setTotalExpenses(financialData.expenses);
+      } else {
+        console.warn("No financial data found, initializing with defaults.");
+        setTotalExpenses(1111110); // Default total expenses
       }
+
+      // Handle expenses data
+      if (docSnap1.exists()) {
+        const expensesData = docSnap1.data() as Expenses;
+        console.log("Expenses Data:", expensesData);
+      } else {
+        console.warn("No expenses data found, initializing with defaults.");
+        setExpenses({
+          year: new Date().getFullYear(),
+          totalExpenses: 9999, // Default total expenses
+          items: [
+            { name: "Housing", value: 1200 },
+            { name: "Food", value: 500 },
+            { name: "Transportation", value: 300 },
+            { name: "Utilities", value: 200 },
+            { name: "Entertainment", value: 150 },
+            { name: "Others", value: 450 },
+          ],
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching expenses data:", error);
+    } finally {
+      setLoading(false);
     }
   };
+
   useEffect(() => {
     if (user) {
+      console.log("Calling fetchExpenses with User:", user);
       fetchexpenses(user);
+    } else {
+      console.log("User is undefined in fetchExpenses trigger.");
     }
-  }, [user]);
+  }, [user, year]);
 
   const handleValueChange = (index: number, value: string) => {
     const updatedItems = [...expenses.items];
@@ -143,11 +167,7 @@ export default function ExpensesForm() {
 
     if (user) {
       try {
-        const userRef = doc(
-          db,
-          `users/${user.uid}/expensesData`,
-          `${expenses.year}`
-        );
+        const userRef = doc(db, `users/${user.uid}/${year}/expensesData`);
         await setDoc(userRef, expenses);
         alert("expenses data saved successfully!");
       } catch (error) {
@@ -175,7 +195,7 @@ export default function ExpensesForm() {
               <Input
                 id="expenses-year"
                 type="number"
-                value={expenses.year}
+                value={year}
                 onChange={(e) => handleYearChange(e.target.value)}
                 min={1900}
                 max={2100}

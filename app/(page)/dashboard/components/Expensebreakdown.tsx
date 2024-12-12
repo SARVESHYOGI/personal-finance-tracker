@@ -58,7 +58,7 @@ export default function ExpenseBreakdown() {
     isLoading: isLoading1,
   } = useSWR(`users/${user?.uid}/${year}/expensesData`, fetcher1);
   console.log(data1);
-  const years = [2022, 2025, 2024];
+  const years = [2022, 2023, 2024];
   console.log(data?.items);
   const datare = data?.items;
   return (

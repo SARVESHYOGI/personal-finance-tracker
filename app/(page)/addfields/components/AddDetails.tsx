@@ -30,34 +30,42 @@ export default function AddDetails() {
   // Fetch financial data from Firestore
   useEffect(() => {
     const fetchFinancialData = async () => {
-      if (user) {
-        try {
-          const userRef = doc(db, `users/${user.uid}/${year}`, "financialData");
-          const docSnap = await getDoc(userRef);
+      if (!user?.uid) {
+        console.log("User is not authenticated.");
+        return;
+      }
 
-          if (docSnap.exists()) {
-            const data = docSnap.data();
-            setFinancialData({
-              income: data.income,
-              expenses: data.expenses,
-              savings: data.savings,
-              totalBalance: calculateTotalBalance(
-                data.income,
-                data.expenses,
-                data.savings
-              ),
-            });
-          } else {
-            console.log("No financial data found.");
-          }
-        } catch (error) {
-          console.error("Error fetching financial data: ", error);
+      if (!year) {
+        console.log("Year is not set. Cannot fetch financial data.");
+        return;
+      }
+
+      try {
+        const userRef = doc(db, `users/${user.uid}/${year}/financialData`);
+        const docSnap = await getDoc(userRef);
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setFinancialData({
+            income: data.income,
+            expenses: data.expenses,
+            savings: data.savings,
+            totalBalance: calculateTotalBalance(
+              data.income,
+              data.expenses,
+              data.savings
+            ),
+          });
+        } else {
+          console.log("No financial data found.");
         }
+      } catch (error) {
+        console.error("Error fetching financial data: ", error);
       }
     };
 
     fetchFinancialData();
-  }, [user]);
+  }, [user, year]); // Add year as a dependency to ensure it updates
 
   // Function to calculate total balance dynamically
   const calculateTotalBalance = (
