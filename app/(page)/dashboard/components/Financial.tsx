@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DollarSign, TrendingUp, TrendingDown, PiggyBank } from "lucide-react";
 
 export default function FinancialOverview() {
-  const { user } = useAuth(); // Get the logged-in user
+  const { user, year, setYear } = useAuth(); // Get the logged-in user
   const [financialData, setFinancialData] = useState({
     totalBalance: 0,
     income: 0,
@@ -21,9 +21,12 @@ export default function FinancialOverview() {
     const fetchFinancialData = async () => {
       if (user) {
         try {
-          const userRef = doc(db, `users/${user.uid}/financialData`, "data");
+          if (!year) {
+            setYear("2022");
+          }
+          const userRef = doc(db, `users/${user.uid}/${year}`, "financialData");
           const docSnap = await getDoc(userRef);
-
+          console.log(docSnap);
           if (docSnap.exists()) {
             setFinancialData(docSnap.data() as typeof financialData);
           } else {
@@ -40,6 +43,7 @@ export default function FinancialOverview() {
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      {year}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Total Balance</CardTitle>

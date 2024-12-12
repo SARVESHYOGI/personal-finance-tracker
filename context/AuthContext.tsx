@@ -14,7 +14,15 @@ interface AuthContextType {
 }
 
 // Create the AuthContext
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+// const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+const AuthContext = createContext<AuthContextType>({
+  user: null,
+  isLoading: false,
+  logout: async () => {},
+  year: "2022",
+  setYear: () => {},
+});
 
 // AuthProvider component to provide context to the entire app
 export function AuthProvider({ children }: { children: React.ReactNode }) {
