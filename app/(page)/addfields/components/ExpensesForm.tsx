@@ -54,8 +54,10 @@ export default function ExpensesForm() {
   const [expenses, setExpenses] = useState<Expenses>(initialData);
   const [formError, setFormError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [totalExpenses, setTotalExpenses] = useState(0);
-
+  const [totalExpenses, setTotalExpenses] = useState(11);
+  useEffect(() => {
+    console.log("Total Expenses Updated:", totalExpenses);
+  }, [totalExpenses]);
   useEffect(() => {
     console.log("Current User:", user);
   }, [user]);
@@ -90,6 +92,7 @@ export default function ExpensesForm() {
         console.log("Year:", year);
         console.log("Financial Data:", financialData);
         setTotalExpenses(financialData.expenses);
+        console.log("Total Expenses:", totalExpenses, financialData.expenses);
       } else {
         console.warn("No financial data found, initializing with defaults.");
         setTotalExpenses(1111110); // Default total expenses
@@ -123,25 +126,34 @@ export default function ExpensesForm() {
 
   useEffect(() => {
     if (user) {
-      console.log("Calling fetchExpenses with User:", user);
-      fetchexpenses(user);
-    } else {
-      console.log("User is undefined in fetchExpenses trigger.");
+      fetchexpenses(user).then(() => {
+        const initialTotal = expenses.items.reduce(
+          (sum, item) => sum + item.value,
+          0
+        );
+        setTotalExpenses(initialTotal);
+      });
     }
   }, [user, year]);
 
   const handleValueChange = (index: number, value: string) => {
     const updatedItems = [...expenses.items];
     updatedItems[index].value = parseFloat(value) || 0;
-    setExpenses({ ...expenses, items: updatedItems });
+
     const newTotal = updatedItems.reduce((sum, item) => sum + item.value, 0);
-    if (newTotal != totalExpenses) {
+    setExpenses({ ...expenses, items: updatedItems });
+
+    // Update totalExpenses to reflect the calculated sum
+    setTotalExpenses(newTotal);
+
+    // Validation for total expenses mismatch
+    if (newTotal > expenses.totalExpenses) {
       setFormError(
-        `Error: Total expenses cannot be less than the sum of individual expenses ($${newTotal}).`
+        `Error: Total expenses ($${newTotal}) exceed the set limit ($${expenses.totalExpenses}).`
       );
-      return;
+    } else {
+      setFormError(null);
     }
-    setExpenses({ ...expenses, items: updatedItems, totalExpenses: newTotal });
   };
 
   const handleYearChange = (value: string) => {
@@ -151,14 +163,14 @@ export default function ExpensesForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const totalExpenses = expenses.items.reduce(
+    const calculatedTotal = expenses.items.reduce(
       (sum, item) => sum + item.value,
       0
     );
 
-    if (expenses.totalExpenses !== totalExpenses) {
+    if (calculatedTotal > expenses.totalExpenses) {
       setFormError(
-        `Error: Total expenses ($${totalExpenses}) exceed the expenses ($${expenses.totalExpenses}).`
+        `Error: Calculated total expenses ($${calculatedTotal}) exceed the set limit ($${expenses.totalExpenses}).`
       );
       return;
     }
@@ -192,14 +204,7 @@ export default function ExpensesForm() {
           <div className="flex space-x-4">
             <div className="w-1/2">
               <Label htmlFor="expenses-year">Year</Label>
-              <Input
-                id="expenses-year"
-                type="number"
-                value={year}
-                onChange={(e) => handleYearChange(e.target.value)}
-                min={1900}
-                max={2100}
-              />
+              <Input id="expenses-year" type="number" value={year} readOnly />
             </div>
           </div>
           <div>
