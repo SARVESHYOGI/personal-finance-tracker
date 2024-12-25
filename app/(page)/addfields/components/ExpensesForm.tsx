@@ -54,10 +54,12 @@ export default function ExpensesForm() {
   const [expenses, setExpenses] = useState<Expenses>(initialData);
   const [formError, setFormError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [totalExpenses, setTotalExpenses] = useState(11);
-  useEffect(() => {
-    console.log("Total Expenses Updated:", totalExpenses);
-  }, [totalExpenses]);
+  const [totalExpenses, setTotalExpenses] = useState(0);
+
+  // useEffect(() => {
+  //   console.log("Total Expenses Updated:", totalExpenses);
+  // }, [totalExpenses]);
+
   useEffect(() => {
     console.log("Current User:", user);
   }, [user]);
@@ -95,7 +97,7 @@ export default function ExpensesForm() {
         console.log("Total Expenses:", totalExpenses, financialData.expenses);
       } else {
         console.warn("No financial data found, initializing with defaults.");
-        setTotalExpenses(1111110); // Default total expenses
+        setTotalExpenses(1111110);
       }
 
       // Handle expenses data
@@ -131,7 +133,7 @@ export default function ExpensesForm() {
           (sum, item) => sum + item.value,
           0
         );
-        setTotalExpenses(initialTotal);
+        // setTotalExpenses(initialTotal);
       });
     }
   }, [user, year]);
@@ -143,10 +145,8 @@ export default function ExpensesForm() {
     const newTotal = updatedItems.reduce((sum, item) => sum + item.value, 0);
     setExpenses({ ...expenses, items: updatedItems });
 
-    // Update totalExpenses to reflect the calculated sum
     setTotalExpenses(newTotal);
 
-    // Validation for total expenses mismatch
     if (newTotal > expenses.totalExpenses) {
       setFormError(
         `Error: Total expenses ($${newTotal}) exceed the set limit ($${expenses.totalExpenses}).`
@@ -156,9 +156,9 @@ export default function ExpensesForm() {
     }
   };
 
-  const handleYearChange = (value: string) => {
-    setExpenses({ ...expenses, year: parseInt(value) });
-  };
+  // const handleYearChange = (value: string) => {
+  //   setExpenses({ ...expenses, year: parseInt(value) });
+  // };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
