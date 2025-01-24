@@ -41,6 +41,7 @@ type ExpenseItem = {
 };
 export default function ExpenseBreakdown() {
   const { year, setYear } = useAuth();
+  console.log(setYear);
   const [selectedOption, setSelectedOption] = useState("2024");
 
   // Handle option change
@@ -48,19 +49,15 @@ export default function ExpenseBreakdown() {
     setSelectedOption(event.target.value);
   };
   const { user } = useAuth();
-  const { data, error, isLoading } = useSWR(
+  const { data } = useSWR(`users/${user?.uid}/${year}/expensesData`, fetcher);
+  const { data: data1 } = useSWR(
     `users/${user?.uid}/${year}/expensesData`,
-    fetcher
+    fetcher1
   );
-  const {
-    data: data1,
-    error: error1,
-    isLoading: isLoading1,
-  } = useSWR(`users/${user?.uid}/${year}/expensesData`, fetcher1);
   console.log(data1);
   const years = [2022, 2023, 2024];
   console.log(data?.items);
-  const datare = data?.items;
+  // const datare = data?.items;
   return (
     <Card>
       <CardHeader>

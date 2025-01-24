@@ -9,7 +9,7 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
+  // CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -27,12 +27,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 
-interface UserProfile {
-  name: string;
-  email: string;
-  bio: string;
-  avatar: string;
-}
+// interface UserProfile {
+//   name: string;
+//   email: string;
+//   bio: string;
+//   avatar: string;
+// }
 
 const profileFormSchema = z.object({
   name: z

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import useSWR, { mutate } from "swr";
+// import useSWR, { mutate } from "swr";
 
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
@@ -16,14 +16,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
+// import {
+//   Select,
+//   SelectContent,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from "@/components/ui/select";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 
 export interface ExpensesItem {
   name: string;
@@ -55,7 +55,7 @@ export default function ExpensesForm() {
   const [formError, setFormError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [totalExpenses, setTotalExpenses] = useState(0);
-
+  console.log(loading);
   // useEffect(() => {
   //   console.log("Total Expenses Updated:", totalExpenses);
   // }, [totalExpenses]);
@@ -133,7 +133,7 @@ export default function ExpensesForm() {
           (sum, item) => sum + item.value,
           0
         );
-        // setTotalExpenses(initialTotal);
+        setTotalExpenses(initialTotal);
       });
     }
   }, [user, year]);
