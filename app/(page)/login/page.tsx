@@ -29,10 +29,8 @@ export default function LoginForm() {
       );
       console.log("User credentials:", userCredentials);
 
-      // Redirect to dashboard after successful login
       router.push("/");
 
-      // Optionally reset the form
       setEmail("");
       setPassword("");
     } catch (err) {

@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase"; // Adjust the import path if necessary
-import { useAuth } from "@/context/AuthContext"; // Custom hook to get the logged-in user
+import { db } from "@/lib/firebase";
+import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DollarSign, TrendingUp, TrendingDown, PiggyBank } from "lucide-react";
 
 export default function FinancialOverview() {
-  const { user, year, setYear } = useAuth(); // Get the logged-in user
+  const { user, year, setYear } = useAuth();
   const [financialData, setFinancialData] = useState({
     totalBalance: 0,
     income: 0,

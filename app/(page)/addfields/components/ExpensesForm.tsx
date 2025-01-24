@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from "react";
 import useSWR, { mutate } from "swr";
 
-import { db } from "@/lib/firebase"; // Adjust the import path if necessary
-import { useAuth } from "@/context/AuthContext"; // Custom hook to get the logged-in user
+import { db } from "@/lib/firebase";
+import { useAuth } from "@/context/AuthContext";
 import {
   Card,
   CardHeader,
@@ -38,7 +38,7 @@ export interface Expenses {
 
 const initialData: Expenses = {
   year: new Date().getFullYear(),
-  totalExpenses: 3000, // Example total expenses
+  totalExpenses: 3000,
   items: [
     { name: "Housing", value: 1200 },
     { name: "Food", value: 500 },
@@ -108,7 +108,7 @@ export default function ExpensesForm() {
         console.warn("No expenses data found, initializing with defaults.");
         setExpenses({
           year: new Date().getFullYear(),
-          totalExpenses: 9999, // Default total expenses
+          totalExpenses: 9999,
           items: [
             { name: "Housing", value: 1200 },
             { name: "Food", value: 500 },

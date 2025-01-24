@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation"; // Updated import
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,7 +18,7 @@ export default function SignupForm() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const router = useRouter(); // Still usable, but now from `next/navigation`
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -45,7 +45,7 @@ export default function SignupForm() {
       );
       console.log("User credentials:", userCredentials.user);
 
-      router.push("/login"); // Redirect using the new router
+      router.push("/login");
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "An error occurred during signup"

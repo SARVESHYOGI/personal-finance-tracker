@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase"; // Adjust the import path if necessary
-import { useAuth } from "@/context/AuthContext"; // Custom hook to get the logged-in user
+import { db } from "@/lib/firebase";
+import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DollarSign, TrendingUp, TrendingDown, PiggyBank } from "lucide-react";
 import {
@@ -15,19 +15,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
+// import { Input } from "@/components/ui/input";
 
 export default function AddDetails() {
-  const { user } = useAuth(); // Get the logged-in user
+  const { user } = useAuth();
   const { year, setYear } = useAuth();
   const [financialData, setFinancialData] = useState({
     income: 0,
     expenses: 0,
     savings: 0,
-    totalBalance: 0, // This will be calculated
+    totalBalance: 0,
   });
 
-  // Fetch financial data from Firestore
+  // Fetch  from Firestore
   useEffect(() => {
     const fetchFinancialData = async () => {
       if (!user?.uid) {
@@ -65,9 +65,9 @@ export default function AddDetails() {
     };
 
     fetchFinancialData();
-  }, [user, year]); // Add year as a dependency to ensure it updates
+  }, [user, year]);
 
-  // Function to calculate total balance dynamically
+  //  calculatation total balance
   const calculateTotalBalance = (
     income: number,
     expenses: number,
@@ -90,7 +90,6 @@ export default function AddDetails() {
     }));
   };
 
-  // Save updated data to Firestore
   const handleSave = async () => {
     if (!user?.uid) {
       alert("User is not authenticated. Please log in.");
