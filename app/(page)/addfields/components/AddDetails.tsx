@@ -15,7 +15,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-// import { Input } from "@/components/ui/input";
 
 export default function AddDetails() {
   const { user } = useAuth();
